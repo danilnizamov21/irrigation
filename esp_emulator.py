@@ -16,3 +16,5 @@ while True:
         print(f"Ошибка: {data}")
     
     time.sleep(1)
+
+    
