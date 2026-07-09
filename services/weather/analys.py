@@ -11,5 +11,5 @@ class Analys():
     
     
     async def analysing(self,probability: str, precipitation: str, classification_evaporation: str):
-        if probability == 
+        pass
         
