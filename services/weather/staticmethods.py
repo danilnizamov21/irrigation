@@ -21,12 +21,4 @@ class EvaporationCalculation:
         return max(0.0, et)
 
     
-    async def classification(self,et: float):
-        if et < self.evaporation_values[0]:
-            return self.classification_str[0]
-        elif self.evaporation_values[0] <= et < self.evaporation_values[1]:
-            return self.classification_str[1]
-        elif self.evaporation_values[1] <= et <self.evaporation_values[2]:
-            return self.evaporation_values[2]
-        elif et > self.evaporation_values[2]:
-            return self.classification_str[3]
+    
