@@ -1,26 +1,22 @@
 from abc import ABC, abstractmethod
-import asyncio
-
-EVAPORATION_VALUES =  [2.0, 4.0, 6.0]
-CLASSIFICATION = ["low", "middle", "high", "strong"]
-
-MIN_MOISTURE_VALUE = 50 #%
-CLASSIFICATION_ANALYS_RAIN = ['low','high']
-PROBABILITY_VALUE_MIN = 20 # mm
-PRECIPATION_PROBABILITY_MIN = 50 # % 
-
-SOIL_MOISTURE_LOW = 60    #% 
-SOIL_MOISTURE_MIDDLE = 70 #% 
-SOIL_MOISTURE_HIGH = 80 #%
+from config import (EVAPORATION_VALUES,
+                    CLASSIFICATION,
+                    PRECIPATION_PROBABILITY_MIN,
+                    PROBABILITY_VALUE_MIN,
+                    CLASSIFICATION_ANALYS_RAIN,
+                    SOIL_MOISTURE_HIGH,
+                    SOIL_MOISTURE_LOW,
+                    SOIL_MOISTURE_MIDDLE)
 
 class BaseClassifier(ABC):
     @abstractmethod
     async def classify(self, **kwargs):
         pass
 
-class EvaporationClassification(BaseClassifier):
+class EvaporationClassification(BaseClassifier) :
     """классификация для исппарения влаги"""
-    async def classify(self,et:float, **kwargs):
+    async def classify(self,et:float,
+                        **kwargs) -> str:
         if et < EVAPORATION_VALUES[0]:
             return CLASSIFICATION[0]
         elif EVAPORATION_VALUES[0] <= et < EVAPORATION_VALUES[1]:
@@ -57,8 +53,8 @@ class RainClassification(BaseClassifier):
             }
 
 class MoistureClassification(BaseClassifier):
-    """классификация для влажности внутри земли"""
-    async def classify(self, soil_moisture:int,**kwargs):
+    """классификация для влажности внутри земли (принимает один параметр - soil_moisture(float))"""
+    async def classify(self, soil_moisture:int,**kwargs) -> str:
         if soil_moisture < SOIL_MOISTURE_LOW:
             return CLASSIFICATION[0]
         elif SOIL_MOISTURE_LOW <= soil_moisture < SOIL_MOISTURE_MIDDLE:
@@ -68,10 +64,3 @@ class MoistureClassification(BaseClassifier):
         else:
             return CLASSIFICATION[3]
 
-async def main():
-    eveap_cl = MoistureClassification()
-    res = await eveap_cl.classify(100)
-    print(res)
-
-if __name__ == "__main__":
-    asyncio.run(main()) 

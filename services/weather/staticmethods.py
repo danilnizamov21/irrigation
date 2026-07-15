@@ -2,6 +2,7 @@
 
 
 class EvaporationCalculation:
+    """Класс для расчета испарения с поверхности земли, отдает значения в мм/м2"""
     def __init__(self,
                  evaporation_values: list | None=None,
                  classification_str: list | None=None,
