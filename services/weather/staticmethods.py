@@ -9,8 +9,8 @@ class EvaporationCalculation:
         self.evaporation_values = evaporation_values or [2.0, 4.0, 6.0]
         self.classification_str = classification_str or ["low", "middle", "high", "strong"]
         
-    @staticmethod
-    async def calculate(t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
+    
+    async def calculate(self,t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
         radiation = ghi * 0.0036
         term1 = 0.0118 * (1 - rh / 100) ** 0.2
         term2 = (t_max - t_min) ** 0.3
@@ -18,7 +18,7 @@ class EvaporationCalculation:
         term4 = 0.1 * (t_avg + 20)
         term5 = 1 - rh / 100
         et = term1 * term2 * term3 + term4 * term5
-        return max(0.0, et)
+        await self.classification(et)
 
     
     async def classification(self,et: float):
@@ -30,3 +30,4 @@ class EvaporationCalculation:
             return self.evaporation_values[2]
         elif et > self.evaporation_values[2]:
             return self.classification_str[3]
+        

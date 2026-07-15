@@ -28,4 +28,6 @@ class Analys():
                 "probability": "low",
                 "precipitation": "low",
             }
+    async def an(self, analys_data,classification: str):
+        if analys_data 
         
