@@ -11,7 +11,7 @@ class EvaporationCalculation:
         self.classification_str = classification_str or ["low", "middle", "high", "strong"]
         
     @staticmethod
-    async def calculate(t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
+    def calculate(t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
         radiation = ghi * 0.0036
         term1 = 0.0118 * (1 - rh / 100) ** 0.2
         term2 = (t_max - t_min) ** 0.3
