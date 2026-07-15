@@ -2,6 +2,7 @@
 
 
 class EvaporationCalculation:
+    """Класс для расчета испарения с поверхности земли, отдает значения в мм/м2"""
     def __init__(self,
                  evaporation_values: list | None=None,
                  classification_str: list | None=None,
@@ -9,8 +10,13 @@ class EvaporationCalculation:
         self.evaporation_values = evaporation_values or [2.0, 4.0, 6.0]
         self.classification_str = classification_str or ["low", "middle", "high", "strong"]
         
+<<<<<<< HEAD
     
     async def calculate(self,t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
+=======
+    @staticmethod
+    def calculate(t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
+>>>>>>> ae53d620cb2b54d33f601fc25a12190488228653
         radiation = ghi * 0.0036
         term1 = 0.0118 * (1 - rh / 100) ** 0.2
         term2 = (t_max - t_min) ** 0.3
@@ -21,6 +27,7 @@ class EvaporationCalculation:
         await self.classification(et)
 
     
+<<<<<<< HEAD
     async def classification(self,et: float):
         if et < self.evaporation_values[0]:
             return self.classification_str[0]
@@ -31,3 +38,6 @@ class EvaporationCalculation:
         elif et > self.evaporation_values[2]:
             return self.classification_str[3]
         
+=======
+    
+>>>>>>> ae53d620cb2b54d33f601fc25a12190488228653

@@ -1,8 +1,8 @@
+from datetime import datetime
 from typing import Any, Dict, Optional
+
 import httpx
 
-
-from datetime import datetime
 from schemas.daily_agregate import DailyAgregate
 
 
@@ -12,7 +12,8 @@ class WeatherDataFetcher:
         self.lon = lon
         self._weather_data: Optional[Dict[str, Any]] = None
 
-    async def __get_weather_data(self):
+    async def __get_weather_data(self) -> Dict[str, Any] | Any | None:
+        """Получение данных со стороннего  АПИ"""
         try:
             if self._weather_data is not None:
                 return self._weather_data
@@ -33,7 +34,9 @@ class WeatherDataFetcher:
             print(f"error {e}")
             return None
 
-    async def group_data_by_day(self):
+    async def group_data_by_day(self) -> list | None:
+        """Группировка данные за один день"""
+
         hourly_data = await self.pars_data()
         if hourly_data is None:
             print("ошибка при получении распаршенных данных")
@@ -65,6 +68,7 @@ class WeatherDataFetcher:
         return list(days.values())
 
     async def pars_data(self):
+        """парсинг данных из JSON в список"""
         data = await self.__get_weather_data()
         if data is None:
             print("возникла ошибка")  # TODO добавить райз а так же логирование

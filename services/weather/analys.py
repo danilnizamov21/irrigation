@@ -1,33 +1,22 @@
-from services.weather.staticmethods import EvaporationCalculation
+import asyncio
+from typing import TypedDict
 
-MIN_MOISTURE_VALUE = 50
-class Analys():
+from classifier import (
+    EvaporationClassification,
+    MoistureClassification,
+    RainClassification,
+)
+from config import CLASSIFICATION
+from staticmethods import EvaporationCalculation
+
+
+# структура для возвращаемого словаря (analysing)
+class AnalysisResult(TypedDict):
+    evaporation: str
+    moisture: str
+    rain: dict[str, str]
+
+
+class Analys:
     def __init__(self):
         self._calc = EvaporationCalculation()
-        
-    async def analys_rain(self, precipitation_propability: int,
-                          precipitation: float
-                          ):
-        if precipitation_propability >= 50 and precipitation > 20:
-            return {
-                "probability": "high",
-                "precipitation": "high",
-            }
-        elif precipitation_propability >= 50 and precipitation < 20:
-            return {
-                "probability": "high",
-                "precipitation": "low",
-            }
-        elif precipitation_propability < 50 and precipitation > 20:
-            return {
-                "probability": "low",
-                "precipitation": "high",
-            }
-        else:
-            return {
-                "probability": "low",
-                "precipitation": "low",
-            }
-    async def an(self, analys_data,classification: str):
-        if analys_data 
-        
