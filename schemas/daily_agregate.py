@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from typing import List
 
 from pydantic import BaseModel, computed_field
@@ -7,11 +6,13 @@ from pydantic import BaseModel, computed_field
 
 class DailyAgregate(BaseModel):
     date: datetime
-    temperatures: List[float]
+    temperatures: List[float]  # = Field(default=None, min_length=1, ge=0.0, le=60.0)
     radiations: List[int]
-    humidities: List[int]
+    humidities: List[int]  # = Field(default=None, min_length=1, ge=0, le=100)
     precipitation: List[float]
-    precipitation_probabilitys: List[int]
+    precipitation_probabilitys: List[int]  # = Field(
+    #     default=None, min_length=1, ge=0, le=100
+    # )
 
     @computed_field
     @property
@@ -42,9 +43,8 @@ class DailyAgregate(BaseModel):
     @property
     def total_precipitation(self) -> float:
         return sum(self.precipitation)
-    
+
     @computed_field
     @property
     def max_precipitation_probability(self) -> float:
         return max(self.precipitation_probabilitys)
- 
