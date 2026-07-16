@@ -1,13 +1,12 @@
 import asyncio
 from typing import TypedDict
 
-from classifier import (
+from services.weather.classifier import (
     EvaporationClassification,
     MoistureClassification,
     RainClassification,
 )
-from config import CLASSIFICATION
-
+from services.weather.config import CLASSIFICATION
 
 
 # структура для возвращаемого словаря (analysing)
@@ -19,7 +18,7 @@ class AnalysisResult(TypedDict):
 
 class Analys:
     def __init__(self):
-        
+
         self.evp_abs = EvaporationClassification()
         self.rain_abs = RainClassification()
         self.moisture_abs = MoistureClassification()
@@ -35,7 +34,7 @@ class Analys:
         term5 = 1 - rh / 100
         et = term1 * term2 * term3 + term4 * term5
         return max(0.0, et)
-    
+
     async def classifier_data_fetcher(
         self,
         et: float,

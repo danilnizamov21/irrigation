@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from config import (
+from services.weather.config import (
     CLASSIFICATION,
     CLASSIFICATION_ANALYS_RAIN,
     EVAPORATION_VALUES,
@@ -36,9 +36,7 @@ class RainClassification(BaseClassifier):
     """ "классификация для дождя(вероятность осадко и кол-во осадков). Возвращает (low, high)"""
 
     async def classify(
-        self, 
-        precipitation_propability: int,
-        precipitation: float
+        self, precipitation_propability: int, precipitation: float
     ) -> dict[str, str]:
         if (
             precipitation_propability >= PRECIPATION_PROBABILITY_MIN

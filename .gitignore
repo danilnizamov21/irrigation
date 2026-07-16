@@ -5,7 +5,11 @@ env/
 **/__pycache__/
 **/.venv/
 **/.pytest_cache/
+**/__pycache__/
+**/automatic_irrigation.egg-info/
+**.vscode/
 error.log
 
 .env
 *.env
+
