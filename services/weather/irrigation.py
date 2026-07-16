@@ -1,14 +1,8 @@
-# from fastapi import Depends, FastAPI
-# from pydantic import BaseModel
-# from api.irigation import router as send_values
-# app = FastAPI()
-
-# app.include_router(send_values, prefix="/values", tags=["Values"])
 import asyncio
 
-from services.weather.analys import Analys
+from analys import Analys
 
-from services.weather.data_fetcher import WeatherDataFetcher
+from data_fetcher import WeatherDataFetcher
 
 
 async def main():

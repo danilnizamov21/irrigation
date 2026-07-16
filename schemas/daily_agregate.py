@@ -42,4 +42,9 @@ class DailyAgregate(BaseModel):
     @property
     def total_precipitation(self) -> float:
         return sum(self.precipitation)
-
+    
+    @computed_field
+    @property
+    def max_precipitation_probability(self) -> float:
+        return max(self.precipitation_probabilitys)
+ 

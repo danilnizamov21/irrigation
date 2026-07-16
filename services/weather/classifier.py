@@ -36,7 +36,9 @@ class RainClassification(BaseClassifier):
     """ "классификация для дождя(вероятность осадко и кол-во осадков). Возвращает (low, high)"""
 
     async def classify(
-        self, precipitation_propability: int, precipitation: float
+        self, 
+        precipitation_propability: int,
+        precipitation: float
     ) -> dict[str, str]:
         if (
             precipitation_propability >= PRECIPATION_PROBABILITY_MIN

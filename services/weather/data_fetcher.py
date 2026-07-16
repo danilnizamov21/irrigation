@@ -19,7 +19,7 @@ class WeatherDataFetcher:
                 return self._weather_data
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lon}&hourly=temperature_2m,shortwave_radiation,precipitation_probability,precipitation,relative_humidity_2m&timezone=Europe%2FMoscow"
+                    f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lon}&hourly=temperature_2m,shortwave_radiation,precipitation_probability,precipitation,relative_humidity_2m&timezone=Europe%2FMoscow&forecast_days=1"
                 )
 
             if response.status_code == 200:
