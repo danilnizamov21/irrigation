@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from services.weather.fetch_and_analys.config import (
+from services.irrigation_and_weather.weather.fetch_and_analys.config import (
     CLASSIFICATION,
     CLASSIFICATION_ANALYS_RAIN,
     EVAPORATION_VALUES,

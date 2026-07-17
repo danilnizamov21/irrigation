@@ -1,12 +1,14 @@
 import asyncio
 from typing import TypedDict
 
-from services.weather.fetch_and_analys.classifier import (
+from services.irrigation_and_weather.weather.fetch_and_analys.classifier import (
     EvaporationClassification,
     MoistureClassification,
     RainClassification,
 )
-from services.weather.fetch_and_analys.config import CLASSIFICATION
+from services.irrigation_and_weather.weather.fetch_and_analys.config import (
+    CLASSIFICATION,
+)
 
 
 # структура для возвращаемого словаря (analysing)
