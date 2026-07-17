@@ -25,17 +25,8 @@ class WeatherDataFetcher:
             async with httpx.AsyncClient() as client:
                 response = await client.get(url)
 
-            # if response.status_code == 200:
-            #     weather_data = response.json()
-            #     return weather_data
             response.raise_for_status()
             return response.json()
-            # else:
-            #     print(
-            #         f"Ошибка при вызове апи: {response.status_code}"
-            #     )  # TODO добавить райз а так же логирование
-            #     logging.critical(f"Ошибпа при вызове API: {response.status_code}")
-            #     raise
 
         except httpx.HTTPStatusError as e:
             logging.critical(

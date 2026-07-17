@@ -1,12 +1,12 @@
 import asyncio
 from typing import TypedDict
 
-from services.weather.classifier import (
+from services.weather.fetch_and_analys.classifier import (
     EvaporationClassification,
     MoistureClassification,
     RainClassification,
 )
-from services.weather.config import CLASSIFICATION
+from services.weather.fetch_and_analys.config import CLASSIFICATION
 
 
 # структура для возвращаемого словаря (analysing)
@@ -59,6 +59,7 @@ class Analys:
         }
 
     def analysing_data_classifier(self, data: AnalysisResult):
+        """Метод для анализа полученных данных в виде строк(evaporation, moisture,rain_probability,rain_precipitation)"""
         current_state = (
             data["evaporation"],
             data["moisture"],
@@ -104,18 +105,3 @@ class Analys:
             ): " нужен полив",
         }
         return RULES.get(current_state, "0")
-
-
-async def main():
-    c = Analys()
-    data = AnalysisResult(
-        evaporation="low",
-        moisture="strong",
-        rain={"probability": "low", "precipitation": "low"},
-    )
-    a = c.analysing_data_classifier(data)
-    print(a)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
