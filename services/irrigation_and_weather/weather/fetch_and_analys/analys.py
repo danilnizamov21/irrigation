@@ -28,6 +28,8 @@ class Analys:
     @staticmethod
     def calculate(t_max: float, t_min: float, t_avg: float, rh: int, ghi: float):
         """Статический метод для расчета испарения"""
+        if (t_max or t_min or t_avg or rh or ghi) < 0.0:
+            return 0.0
         radiation = ghi * 0.0036
         term1 = 0.0118 * (1 - rh / 100) ** 0.2
         term2 = (t_max - t_min) ** 0.3
@@ -68,6 +70,7 @@ class Analys:
             data["rain"]["probability"],
             data["rain"]["precipitation"],
         )
+
         RULES = {
             (
                 CLASSIFICATION[0],
@@ -80,30 +83,30 @@ class Analys:
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
-            ): " нужен полив",
+            ): "нужен полив",
             (
                 CLASSIFICATION[2],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
-            ): " нужен полив",
+            ): "нужен полив",
             (
                 CLASSIFICATION[3],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
-            ): " нужен полив",
+            ): "нужен полив",
             (
                 CLASSIFICATION[3],
                 CLASSIFICATION[2],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
-            ): " нужен полив",
+            ): "нужен полив",
             (
                 CLASSIFICATION[3],
                 CLASSIFICATION[3],
                 CLASSIFICATION[0],
                 CLASSIFICATION[0],
-            ): " нужен полив",
+            ): "нужен полив",
         }
         return RULES.get(current_state, "0")
