@@ -54,7 +54,7 @@ async def test_classifier_data_fetcher():
 
 
 @pytest.mark.parametrize(
-    "evp, moist, probability, precipitation,expected",
+    "evp, moist, probability, precipitation, expected",
     [
         (
             CLASSIFICATION[0],
