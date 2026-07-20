@@ -2,6 +2,7 @@ import pytest
 
 from services.irrigation_and_weather.weather.fetch_and_analys.classifier import (
     EvaporationClassification,
+    MoistureClassification,
     RainClassification,
 )
 from services.irrigation_and_weather.weather.fetch_and_analys.config import (
@@ -39,6 +40,17 @@ async def test_rain_classification(
     )
 
 
+@pytest.mark.parametrize(
+    "soil_moisture,expected",
+    [
+        (50, CLASSIFICATION[0]),
+        (65, CLASSIFICATION[1]),
+        (75, CLASSIFICATION[2]),
+        (90, CLASSIFICATION[3]),
+    ],
+)
 @pytest.mark.asyncio
-async def test_moisture_classification():
-    pass
+async def test_moisture_classification(soil_moisture, expected):
+    moisture_cls = MoistureClassification()
+    result = await moisture_cls.classify(soil_moisture)
+    assert result == expected

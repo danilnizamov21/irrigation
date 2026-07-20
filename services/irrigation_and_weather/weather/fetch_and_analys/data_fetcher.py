@@ -17,7 +17,7 @@ class WeatherDataFetcher:
         self.forecast_days = forecast_days
         self._weather_data: Optional[Dict[str, Any]] = None
 
-    async def __get_weather_data(self) -> Dict[str, Any] | Any | None:
+    async def _get_weather_data(self) -> Dict[str, Any] | Any | None:
         """Получение данных со стороннего  АПИ"""
         try:
             url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lon}&hourly=temperature_2m,shortwave_radiation,precipitation_probability,precipitation,relative_humidity_2m&timezone=Europe%2FMoscow&forecast_days={self.forecast_days}"
@@ -81,7 +81,7 @@ class WeatherDataFetcher:
     async def pars_data(self):
         """парсинг данных из JSON в список"""
         try:
-            data = await self.__get_weather_data()
+            data = await self._get_weather_data()
             if data is None:
                 logging.critical(
                     "Ошибка при получении данных из API"
