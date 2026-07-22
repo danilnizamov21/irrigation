@@ -1,13 +1,15 @@
-from sqlalchemy.ext.asyncio import create_async_engine,async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
 
-engine = create_async_engine("postgresql+asyncpg://user:password@localhost/dbname")
-session = async_sessionmaker(engine, expire_on_commit=False)
-from sqlalchemy.orm import declarative_base
+engine = create_async_engine("postgresql+asyncpg://postgres:1234@localhost/irrigation")
+
+SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
+
+
 async def get_session():
-    async with session() as s:
-        try:
-            yield s
-        except:
-            await s.close()
+    async with SessionLocal() as s:
+        yield s
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
