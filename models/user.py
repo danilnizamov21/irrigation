@@ -10,3 +10,6 @@ class User(Base):
     login: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String, nullable=False)
     hash_password: Mapped[str] = mapped_column(String, nullable=False)
+    role: Mapped[str] = mapped_column(
+        String, default="user"
+    )  # user, admin, super-admin
