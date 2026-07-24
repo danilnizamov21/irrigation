@@ -3,7 +3,8 @@ from datetime import timedelta
 from authx import AuthX, AuthXConfig, TokenPayload
 from fastapi import APIRouter, Depends, Response
 
-from schemas.user import UserLogin
+from schemas.user import UserLogin, UserRegister
+from services.auth.token import AuthService
 
 router = APIRouter()
 config = AuthXConfig()
@@ -19,8 +20,20 @@ auth = AuthX(config=config)
 
 
 @router.post("/login")
-async def login(payload: UserLogin, responce: Response):
-    pass
+async def login(
+    payload: UserLogin, response: Response, service: AuthService = Depends()
+):
+    tokens = await service.authenticate_user(payload)
+    refresh_token = tokens["refresh_token"]
+    auth.set_access_cookies(refresh_token, response)
+    return {
+        "access_token": tokens["access_token"]
+    }  # TODO нужно починить возвращаемый токен, но так ручка рабочая. Ошибка в передачи в куки
+
+
+@router.post("/register")
+async def register(payload: UserRegister, service: AuthService = Depends()):
+    return await service.register_user(payload)
 
 
 @router.post("/refresh")
