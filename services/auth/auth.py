@@ -2,6 +2,7 @@ import logging
 from datetime import timedelta
 from typing import Any
 
+import jwt
 from authx import AuthX, AuthXConfig
 from fastapi import HTTPException
 from redis import RedisError
@@ -103,17 +104,17 @@ class AuthService:
             )
             raise
 
-    async def refresh_access_token(self, token: str, sub: str) -> str:
+    async def refresh_access_token(self, token: str) -> str:
         """Проверка хеша и выдача нового access токена"""
 
         hashed_token = hash_token(token)
-        print(f"TOKEN: {token}")
-        print(f"HASH_TOKEN {hashed_token}")
+        decoded_token = self.decode_jwt(token)
+
         try:
             check = await self.redis_con.get(f"hashed_token:{hashed_token}")
         except RedisError:
             logger.exception(
-                f"Ошибка Redis при обновлении access_token для user_id={sub}"
+                f"Ошибка Redis при получении refresh_token для user_id={decoded_token.sub}"
             )
             raise
 
@@ -123,5 +124,23 @@ class AuthService:
                 detail="Недействительный или истекший refresh токен",
             )
 
-        access_token = auth.create_access_token(uid=str(sub))
+        access_token = auth.create_access_token(uid=decoded_token["sub"])
         return access_token
+
+    def decode_jwt(self, token: str):
+        """Декодирование JWT для получения информации по нужным полям"""
+        secret = "your-secret-keyq0w9odkq9e02di2093owdke9033iedo902de209"
+        decoded_jwt = jwt.decode(token, secret, algorithms=["HS256"])
+        return decoded_jwt
+
+    async def delete_refresh_token(self, token: str):
+        """Удаление Refresh токена пользователя из бд Редис"""  # TODO Нужно реализовать возможность удаления одного текущего токена а так же удаление всех токенов юзера
+        hashed_token = hash_token(token)
+        try:
+            await self.redis_con.delete(f"hashed_token:{hashed_token}")
+            return "refresh_token удален успешно"
+        except RedisError:
+            logger.exception(
+                f"Ошибка Redis при попытке удаления токена refresh_token={token}"
+            )
+            raise

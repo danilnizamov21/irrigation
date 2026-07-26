@@ -1,8 +1,8 @@
 from datetime import timedelta
 from typing import Annotated
 
-from authx import AuthX, AuthXConfig, TokenPayload
-from fastapi import APIRouter, Cookie, Depends, Request, Response
+from authx import AuthX, AuthXConfig
+from fastapi import APIRouter, Depends, Request, Response
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -53,13 +53,9 @@ async def register(payload: UserRegister, service: AuthServiceDep):
 async def refresh(
     service: AuthServiceDep,
     request: Request,
-    refresh_token: Annotated[str | None, Cookie(alias="refresh_token_cookie")] = None,
-    payload: TokenPayload = Depends(auth.refresh_token_required),
 ):
     cookie = request.cookies
-    access_token = await service.refresh_access_token(
-        cookie["refresh_token_cookie"], payload.sub
-    )
+    access_token = await service.refresh_access_token(cookie["refresh_token_cookie"])
     print(f"TOKEN: {cookie['refresh_token_cookie']}")
     return {"access_token": access_token}
 
@@ -70,12 +66,9 @@ async def protected():
 
 
 @router.post("/logout")
-def logout(response: Response):
-
+async def logout(service: AuthServiceDep, response: Response, request: Request):
+    cookie = request.cookies
+    await service.delete_refresh_token(cookie["refresh_token_cookie"])
     auth.unset_cookies(response)
+
     return {"message": "Успешный выход из системы"}
-
-
-@router.post("/refresh1")
-async def refresh1(request: Request):
-    print("ВСЕ КУКИ:", request.cookies)  # 👈 Посмотрите в консоли uvicorn
