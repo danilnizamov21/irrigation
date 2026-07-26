@@ -2,7 +2,7 @@ from datetime import timedelta
 from typing import Annotated
 
 from authx import AuthX, AuthXConfig, TokenPayload
-from fastapi import APIRouter, Cookie, Depends, Response
+from fastapi import APIRouter, Cookie, Depends, Request, Response
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,7 +23,6 @@ config = AuthXConfig(
 auth = AuthX(config=config)
 
 
-# Register error handlers for proper responses
 async def get_auth_service(
     session: AsyncSession = Depends(get_session),
     redis_con: Redis = Depends(connect_to_redis),
@@ -31,7 +30,6 @@ async def get_auth_service(
     return AuthService(session=session, redis_con=redis_con)
 
 
-# --- 2. Создаем алиас типа через Annotated ---
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 
@@ -54,15 +52,30 @@ async def register(payload: UserRegister, service: AuthServiceDep):
 @router.post("/refresh")
 async def refresh(
     service: AuthServiceDep,
+    request: Request,
     refresh_token: Annotated[str | None, Cookie(alias="refresh_token_cookie")] = None,
     payload: TokenPayload = Depends(auth.refresh_token_required),
 ):
-
-    access_token = await service.refresh_access_token(refresh_token, payload.sub)
-
+    cookie = request.cookies
+    access_token = await service.refresh_access_token(
+        cookie["refresh_token_cookie"], payload.sub
+    )
+    print(f"TOKEN: {cookie['refresh_token_cookie']}")
     return {"access_token": access_token}
 
 
 @router.get("/protected", dependencies=[Depends(auth.access_token_required)])
 async def protected():
     return {"message": "Hello World"}
+
+
+@router.post("/logout")
+def logout(response: Response):
+
+    auth.unset_cookies(response)
+    return {"message": "Успешный выход из системы"}
+
+
+@router.post("/refresh1")
+async def refresh1(request: Request):
+    print("ВСЕ КУКИ:", request.cookies)  # 👈 Посмотрите в консоли uvicorn

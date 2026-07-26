@@ -15,7 +15,7 @@ async def connect_to_redis():
             port=12300,
             decode_responses=True,
             username="default",
-            password=pwd,
+            password="",
         )
 
         await redis_connect.ping()

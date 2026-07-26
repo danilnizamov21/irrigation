@@ -107,7 +107,8 @@ class AuthService:
         """Проверка хеша и выдача нового access токена"""
 
         hashed_token = hash_token(token)
-
+        print(f"TOKEN: {token}")
+        print(f"HASH_TOKEN {hashed_token}")
         try:
             check = await self.redis_con.get(f"hashed_token:{hashed_token}")
         except RedisError:
