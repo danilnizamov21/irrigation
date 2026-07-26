@@ -1,10 +1,15 @@
 from datetime import timedelta
+from typing import Annotated
 
 from authx import AuthX, AuthXConfig, TokenPayload
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Cookie, Depends, Response
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.db import get_session
+from core.redis_bd import connect_to_redis
 from schemas.user import UserLogin, UserRegister
-from services.auth.token import AuthService
+from services.auth.auth import AuthService
 
 router = APIRouter()
 config = AuthXConfig()
@@ -16,31 +21,44 @@ config = AuthXConfig(
 
 
 auth = AuthX(config=config)
+
+
 # Register error handlers for proper responses
+async def get_auth_service(
+    session: AsyncSession = Depends(get_session),
+    redis_con: Redis = Depends(connect_to_redis),
+) -> AuthService:
+    return AuthService(session=session, redis_con=redis_con)
+
+
+# --- 2. Создаем алиас типа через Annotated ---
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 
 @router.post("/login")
-async def login(
-    payload: UserLogin, response: Response, service: AuthService = Depends()
-):
+async def login(payload: UserLogin, response: Response, service: AuthServiceDep):
     tokens = await service.authenticate_user(payload)
     refresh_token = tokens["refresh_token"]
-    auth.set_access_cookies(refresh_token, response)
+    auth.set_refresh_cookies(refresh_token, response, max_age=2419200)
     return {
-        "access_token": tokens["access_token"]
-    }  # TODO нужно починить возвращаемый токен, но так ручка рабочая. Ошибка в передачи в куки
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+    }
 
 
 @router.post("/register")
-async def register(payload: UserRegister, service: AuthService = Depends()):
+async def register(payload: UserRegister, service: AuthServiceDep):
     return await service.register_user(payload)
 
 
 @router.post("/refresh")
-async def refresh(payload: TokenPayload = Depends(auth.refresh_token_required)):
-    """Exchange refresh token for new access token."""
+async def refresh(
+    service: AuthServiceDep,
+    refresh_token: Annotated[str | None, Cookie(alias="refresh_token_cookie")] = None,
+    payload: TokenPayload = Depends(auth.refresh_token_required),
+):
 
-    access_token = auth.create_access_token(uid=payload.sub)
+    access_token = await service.refresh_access_token(refresh_token, payload.sub)
 
     return {"access_token": access_token}
 
