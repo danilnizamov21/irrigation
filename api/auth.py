@@ -1,8 +1,9 @@
+import logging
 from datetime import timedelta
 from typing import Annotated
 
 from authx import AuthX, AuthXConfig
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +22,8 @@ config = AuthXConfig(
 
 
 auth = AuthX(config=config)
+
+logger = logging.getLogger(__name__)
 
 
 async def get_auth_service(
@@ -54,10 +57,19 @@ async def refresh(
     service: AuthServiceDep,
     request: Request,
 ):
-    cookie = request.cookies
-    access_token = await service.refresh_access_token(cookie["refresh_token_cookie"])
-    print(f"TOKEN: {cookie['refresh_token_cookie']}")
-    return {"access_token": access_token}
+    try:
+        cookie = request.cookies
+
+        access_token = await service.refresh_access_token(
+            cookie["refresh_token_cookie"]
+        )
+
+        return {"access_token": access_token}
+    except KeyError as e:
+        logger.warning(f"Ошибка при передеча cookie {e}")
+        raise HTTPException(
+            status_code=401, detail="Отсутсвует или неверный рефреш токен"
+        )
 
 
 @router.get("/protected", dependencies=[Depends(auth.access_token_required)])
@@ -67,8 +79,12 @@ async def protected():
 
 @router.post("/logout")
 async def logout(service: AuthServiceDep, response: Response, request: Request):
-    cookie = request.cookies
-    await service.delete_refresh_token(cookie["refresh_token_cookie"])
-    auth.unset_cookies(response)
+    try:
+        cookie = request.cookies
+        await service.delete_refresh_token(cookie["refresh_token_cookie"])
+        auth.unset_cookies(response)
 
-    return {"message": "Успешный выход из системы"}
+        return {"message": "Успешный выход из системы"}
+    except KeyError as e:
+        logger.critical(f"Ошибка при попытке выхода: {e}. Cookie={cookie}")
+        raise HTTPException(status_code=404, detail="Непредвиденная ошибка при выходе ")

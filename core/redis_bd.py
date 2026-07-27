@@ -2,8 +2,13 @@ import logging
 import os
 
 import redis.asyncio as asyncred
+from dotenv import find_dotenv, load_dotenv
 
 logger = logging.getLogger(__name__)
+
+
+file_loaded = load_dotenv(find_dotenv(), verbose=True, override=True)
+
 
 pwd = os.getenv("REDIS_PWD")
 
@@ -15,7 +20,7 @@ async def connect_to_redis():
             port=12300,
             decode_responses=True,
             username="default",
-            password="",
+            password=pwd,
         )
 
         await redis_connect.ping()
