@@ -37,7 +37,7 @@ class TestWeatherDataFetcher:
         respx_mock.get(url__regex=r"https://api\.open-meteo\.com/v1/forecast.*").mock(
             side_effect=httpx.InvalidURL("Invalid url")
         )
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             await fetch._get_weather_data()
 
 

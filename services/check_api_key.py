@@ -19,7 +19,8 @@ async def get_device_by_key(
     payload: SoilData, db: AsyncSession = Depends(get_session)
 ) -> Esp:
     try:
-        hashed = hash_token(payload.hashed_api_key)
+        # esp_12eo120w12wl0121ws
+        hashed = hash_token(payload.api_key)
         query = select(Esp).where(Esp.hashed_api_key == hashed)
         result = await db.execute(query)
         device = result.scalar_one_or_none()

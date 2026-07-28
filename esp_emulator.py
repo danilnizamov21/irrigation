@@ -1,17 +1,17 @@
-import requests
 import random
 import time
 
+import requests
+
 while True:
     data = {
-        "outside_temperature": random.uniform(34.0, 50.0),
-        "inside_temperature": random.uniform(34.0, 50.0),
-        "moisture": random.randint(1, 21),
+        "api_key": "c270027c2c9f1589b865660e4fcb3223c2123c26735d4a8b9f0d9ca55dcfb7bd",
+        "moisture": random.randint(1, 100),
     }
 
     try:
         r = requests.post(
-            "http://127.0.0.1:8000/values/send-values", json=data, timeout=2
+            "http://127.0.0.1:8000/irrigation/telemetry", json=data, timeout=10
         )
         print(f"Успех: {r.json()}")
     except Exception as e:
