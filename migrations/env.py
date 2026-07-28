@@ -6,6 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from core.db import Base, url
 from models.esp import Esp  # noqa
 from models.user import User  # noqa
+from models.user_esp import user_esp_association  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

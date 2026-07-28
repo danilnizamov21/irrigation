@@ -1,7 +1,8 @@
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.db import Base
+from models.user_esp import user_esp_association
 
 
 class User(Base):
@@ -13,3 +14,6 @@ class User(Base):
     role: Mapped[str] = mapped_column(
         String, default="user"
     )  # user, admin, super-admin
+    esps: Mapped[list["Esp"]] = relationship(  # noqa: F821
+        secondary=user_esp_association, back_populates="users"
+    )
