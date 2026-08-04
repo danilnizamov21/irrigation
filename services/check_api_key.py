@@ -16,11 +16,15 @@ logger = logging.getLogger(__name__)
 
 
 async def get_device_by_key(
-    payload: SoilData, db: AsyncSession = Depends(get_session)
+    payload: SoilData | str, db: AsyncSession = Depends(get_session)
 ) -> Esp:
     try:
+        if payload is SoilData:
+            hashed = hash_token(payload.api_key)
+        else:
+            hashed = hash_token(payload)
         # esp_12eo120w12wl0121ws
-        hashed = hash_token(payload.api_key)
+
         query = select(Esp).where(Esp.hashed_api_key == hashed)
         result = await db.execute(query)
         device = result.scalar_one_or_none()
