@@ -6,3 +6,8 @@ class SoilData(BaseModel):
     moisture: int = Field(
         gt=0, le=100, description="Влажность внутри почвы", examples=[50]
     )
+
+
+class EspResponse(BaseModel):
+    lat: float
+    lon: float

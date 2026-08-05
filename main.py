@@ -8,4 +8,4 @@ app = FastAPI()
 
 app.include_router(auth, prefix="/auth", tags=["Auth"])
 app.include_router(esp, prefix="/irrigation", tags=["Irrigation"])
-app.include_router(linking, prefix="/linking", tags=["Linking"])
+app.include_router(linking, prefix="/modules", tags=["Module"])
