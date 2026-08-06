@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import auth
 from core.db import get_session
-from schemas.esp import EspResponse
+from schemas.esp import EspResponse, EspUpdate
 from services.linking_module_to_user import LinkinModule
 
 router = APIRouter()
@@ -30,6 +30,7 @@ async def get_all_model(
     token: TokenPayload = Depends(auth.access_token_required),
     db: AsyncSession = Depends(get_session),
 ):
+    """Получение всех id модулей у юзера"""
     linking_cls = LinkinModule
     return await linking_cls.get_user_modules(int(token.sub), db)
 
@@ -40,5 +41,18 @@ async def get_one_module(
     token: TokenPayload = Depends(auth.access_token_required),
     db: AsyncSession = Depends(get_session),
 ):
+    """Получние информации по одному модулю"""
     linking_cls = LinkinModule
     return await linking_cls.get_module(esp_id, db)
+
+
+@router.patch("/update_module_data")
+async def update_module(
+    esp_id: int,
+    payload: EspUpdate,
+    token: TokenPayload = Depends(auth.access_token_required),
+    db: AsyncSession = Depends(get_session),
+):
+    """Обновление данных модуля"""
+    linking_cls = LinkinModule
+    return await linking_cls.update_module(esp_id, payload, db)

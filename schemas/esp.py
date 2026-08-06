@@ -11,3 +11,8 @@ class SoilData(BaseModel):
 class EspResponse(BaseModel):
     lat: float
     lon: float
+
+
+class EspUpdate(BaseModel):
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
