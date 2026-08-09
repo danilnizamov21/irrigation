@@ -19,3 +19,10 @@ async def telemetry(payload: SoilData, db: AsyncSession = Depends(get_session)):
         lat=device.lat, lon=device.lon, soil_moisture=payload.moisture
     )
     return decision
+
+
+@router.post("/start")
+async def start(esp_: int, duration: int):
+    # TODO ручка тестовая, требует реализации уже в будущем. Через HTTP запрос будет поступать на есп32 и включать полив на определенный промежуток времени.Своего рода ручное управление
+    # TODO так же стоит реализовать ручку полной остановки автополива.
+    pass

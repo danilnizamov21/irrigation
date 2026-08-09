@@ -46,7 +46,9 @@ class Analys:
         precipitation_propability: int,
         precipitation: float,
     ) -> AnalysisResult:
-        """Метод для преобразования данных в виде строк на основе полученных данных из JSON. Взайимодействует с абстрактным классом"""
+        """Метод для преобразования данных в виде строк на основе полученных данных из JSON.
+        Взайимодействует с абстрактным классом"""
+
         async with asyncio.TaskGroup() as tg:
             evp_classification = tg.create_task(self.evp_abs.classify(et))
             moisture_classification = tg.create_task(
@@ -62,7 +64,7 @@ class Analys:
             "rain": rain_classification.result(),
         }
 
-    def analysing_data_classifier(self, data: AnalysisResult):
+    def analysing_data_classifier(self, data: AnalysisResult) -> str:
         """Метод для анализа полученных данных в виде строк(evaporation, moisture,rain_probability,rain_precipitation)"""
         current_state = (
             data["evaporation"],

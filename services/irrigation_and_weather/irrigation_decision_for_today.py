@@ -6,7 +6,7 @@ from services.irrigation_and_weather.weather.fetch_and_analys.analys import Anal
 logger = logging.getLogger(__name__)
 
 
-async def _determine_irrigation_decision(day, soil_moisture: int):
+async def _determine_irrigation_decision(day, soil_moisture: int) -> str:
     """Логика приянтия решения"""
     analys = Analys()
     # Расчет испарения
