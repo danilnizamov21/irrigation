@@ -30,7 +30,7 @@ async def link_module(
     return linking
 
 
-@router.get("/get_all_modules")
+@router.get("/modules")
 async def get_all_model(
     token: TokenPayload = Depends(auth.access_token_required),
     service: LinkinModule = Depends(get_linking_service),
@@ -41,24 +41,33 @@ async def get_all_model(
     return await service.get_user_modules(user_id=user_id)
 
 
-@router.get("/get_one_module", response_model=EspResponse)
+@router.get("/module/{module_key}", response_model=EspResponse)
 async def get_one_module(
-    esp_id: int,
+    module_key: int,
     token: TokenPayload = Depends(auth.access_token_required),
     service: LinkinModule = Depends(get_linking_service),
 ):
     """Получние информации по одному модулю"""
 
-    return await service.get_module(esp_id)
+    return await service.get_module(module_key)
 
 
-@router.patch("/update_module_data")
+@router.patch("/module/{module_key}")
 async def update_module(
-    esp_id: int,
+    module_key: int,
     payload: EspUpdate,
     token: TokenPayload = Depends(auth.access_token_required),
     service: LinkinModule = Depends(get_linking_service),
 ):
     """Обновление данных модуля"""
 
-    return await service.update_module(esp_id, payload)
+    return await service.update_module(module_key, payload)
+
+
+@router.delete("/{module_id}")
+async def delete_module(
+    module_id: int,
+    token: TokenPayload = Depends(auth.access_token_required),
+    service: LinkinModule = Depends(get_linking_service),
+):
+    return await service.delete_module(module_id, int(token.sub))

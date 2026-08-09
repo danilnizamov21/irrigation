@@ -1,11 +1,12 @@
 import logging
 
-from sqlalchemy import exc, insert, select, update
+from sqlalchemy import delete, exc, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.esp import Esp
 from models.user_esp import user_esp_association
 from schemas.esp import EspUpdate
+from services.auth.hash import hash_token
 from services.check_api_key import get_device_by_key
 
 logger = logging.getLogger(__name__)
@@ -43,10 +44,10 @@ class LinkinModule:
             logger.error(f"Ошибка при получении модулей: {e}")
             raise
 
-    async def get_module(self, esp_id: int) -> Esp:
+    async def get_module(self, key: int) -> Esp:
         """Получение одного модуля по ID. получение полной информации о модуле"""
         try:
-            get = select(Esp).where(Esp.id == esp_id)
+            get = select(Esp).where(Esp.id == hash_token(key))
             result = await self.session.execute(get)
             module = result.scalars().first()
             return module
@@ -54,27 +55,34 @@ class LinkinModule:
             logger.warning(f"Ошибка при получении данных о модуле {e}")
             raise
 
-    async def update_module(self, esp_id: int, payload: EspUpdate):
+    async def update_module(self, key: int, payload: EspUpdate):
         """Обновление модуля по ID."""
         try:
-            get = (
+            update_device = (
                 update(Esp)
-                .where(Esp.id == esp_id)
+                .where(Esp.hashed_api_key == hash_token(key))
                 .values(lat=payload.lat, lon=payload.lon)
             )
-            await self.session.execute(get)
+
+            await self.session.execute(update_device)
             await self.session.commit()
             return {"message": "Данные обновлены"}
         except exc.SQLAlchemyError as e:
             logger.critical(f"ошибка при обновлении данных модуля: {e}")
             raise
 
+    async def delete_module(self, esp_id: int, user_id: int):
+        try:
+            delete_device = delete(user_esp_association).where(
+                user_esp_association.c.esp_id == esp_id,
+                user_esp_association.c.user_id == user_id,
+            )
+            await self.session.execute(delete_device)
+            await self.session.commit()
+            return {"message": "Модуль удален"}
 
-# async def main():
-#     l = LinkinModule
-#     linking = await l.linking_module_to_user("esp_12eo120w12wl0121ws")
-#     print(linking)
-
-
-# if __name__ == "__main__":
-#     asyncio.run(main())
+        except exc.SQLAlchemyError as e:
+            logger.critical(
+                f"Ошибка при удалении модуля пользователем: {user_id}, модуля {esp_id}. С ошибкой {e}"
+            )
+            raise
