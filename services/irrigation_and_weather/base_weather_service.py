@@ -5,6 +5,8 @@ from services.irrigation_and_weather.weather.fetch_and_analys.data_fetcher impor
     WeatherDataFetcher,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class BaseWeatherServiceFetcher(ABC):
     """Абстрактный интерфейс для работы с погодой"""
@@ -12,7 +14,6 @@ class BaseWeatherServiceFetcher(ABC):
     @abstractmethod
     async def get_today_weather(self, lat: float, lon: float):
         """получить погодные данные за сегодншний день"""
-        pass
 
     @abstractmethod
     async def get_week_weather(self, lat: float, lon: float):
@@ -28,7 +29,7 @@ class WeatherFetcher(BaseWeatherServiceFetcher):
             fetcher = WeatherDataFetcher(lat, lon, 1)
             days = await fetcher.group_data_by_day()
             if not days:
-                logging.warning(
+                logger.warning(
                     f"Метод group_by_day вернул: None."
                     f"Данные lat={lat}, lon={lon}, forecast_days=1"
                 )
@@ -36,7 +37,7 @@ class WeatherFetcher(BaseWeatherServiceFetcher):
             day = days[0]
             return day
         except Exception as e:
-            logging.critical(
+            logger.critical(
                 f"Непредвиденная ошибка при получении погода на текущий день."
                 f"Данные lat={lat}, lon={lon}, forecast_days=1"
                 f"Ошибка: {e}"
@@ -49,7 +50,7 @@ class WeatherFetcher(BaseWeatherServiceFetcher):
             fetcher = WeatherDataFetcher(lat, lon, 7)
             days = await fetcher.group_data_by_day()
             if not days:
-                logging.warning(
+                logger.warning(
                     f"Метод group_by_day вернул: None."
                     f"Данные lat={lat}, lon={lon}, forecast_days=7"
                 )
@@ -57,7 +58,7 @@ class WeatherFetcher(BaseWeatherServiceFetcher):
 
             return days
         except Exception as e:
-            logging.critical(
+            logger.critical(
                 f"Непредвиденная ошибка при получении погода на текущий день."
                 f"Данные lat={lat}, lon={lon}, forecast_days=7"
                 f"Ошибка: {e}"

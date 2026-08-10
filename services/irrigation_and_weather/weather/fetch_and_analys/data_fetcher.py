@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 
@@ -8,6 +8,7 @@ from core.logger import configure_logging
 from schemas.daily_agregate import DailyAgregate
 
 configure_logging()
+logger = logging.getLogger(__name__)
 
 
 class WeatherDataFetcher:
@@ -15,9 +16,9 @@ class WeatherDataFetcher:
         self.lat = lat
         self.lon = lon
         self.forecast_days = forecast_days
-        self._weather_data: Optional[Dict[str, Any]] = None
+        self._weather_data: dict[str, Any] | None = None
 
-    async def _get_weather_data(self) -> Dict[str, Any] | Any | None:
+    async def _get_weather_data(self) -> dict[str, Any] | Any | None:
         """Получение данных со стороннего  АПИ"""
         try:
             url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lon}&hourly=temperature_2m,shortwave_radiation,precipitation_probability,precipitation,relative_humidity_2m&timezone=Europe%2FMoscow&forecast_days={self.forecast_days}"
@@ -29,15 +30,15 @@ class WeatherDataFetcher:
             return response.json()
 
         except httpx.HTTPStatusError as e:
-            logging.critical(
+            logger.critical(
                 f"Ошибка при вызове API: {e.response.status_code} URL:{url}"
             )
             raise
         except httpx.RequestError as e:
-            logging.critical(f"Сбой или тайм-аут при обращении к API {e.request.url}")
+            logger.critical(f"Сбой или тайм-аут при обращении к API {e.request.url}")
             raise RuntimeError("Не удалось связаться с API") from e
         except Exception as e:
-            logging.critical(
+            logger.critical(
                 f"Непредвиденная ошибка при попытке связаться с сервером {e}"
             )
             raise
@@ -47,7 +48,7 @@ class WeatherDataFetcher:
         try:
             hourly_data = await self.pars_data()
             if hourly_data is None:
-                logging.critical("Ошибка при получении спаршенных данных")
+                logger.critical("Ошибка при получении спаршенных данных")
                 raise ValueError("Не удалось получить данные из pars_data")
 
             days = {}
@@ -75,7 +76,7 @@ class WeatherDataFetcher:
 
             return list(days.values())
         except Exception as e:
-            logging.critical(f"Критическая ошибка при парсинге данных {e}")
+            logger.critical(f"Критическая ошибка при парсинге данных {e}")
             raise
 
     async def pars_data(self):
@@ -83,7 +84,7 @@ class WeatherDataFetcher:
         try:
             data = await self._get_weather_data()
             if data is None:
-                logging.critical(
+                logger.critical(
                     "Ошибка при получении данных из API"
                 )  # TODO добавить райз а так же логирование
                 raise ValueError("Не удалось получить данные из get_weather_data")
@@ -117,5 +118,5 @@ class WeatherDataFetcher:
 
             return result
         except Exception as e:
-            logging.critical(f"Критическая ошибка при парсинге данных {e}")
+            logger.critical(f"Критическая ошибка при парсинге данных {e}")
             raise
