@@ -42,7 +42,7 @@ class Analys:
     async def classifier_data_fetcher(
         self,
         et: float,
-        soil_moisture: int,
+        soil_moisture: int | None,
         precipitation_propability: int,
         precipitation: float,
     ) -> AnalysisResult:
@@ -51,64 +51,97 @@ class Analys:
 
         async with asyncio.TaskGroup() as tg:
             evp_classification = tg.create_task(self.evp_abs.classify(et))
-            moisture_classification = tg.create_task(
-                self.moisture_abs.classify(soil_moisture)
-            )
+
             rain_classification = tg.create_task(
                 self.rain_abs.classify(precipitation_propability, precipitation)
             )
+            moisture_classification = None
+            if soil_moisture is not None:
+                moisture_classification = tg.create_task(
+                    self.moisture_abs.classify(soil_moisture)
+                )
 
-        return {
+        result = {
             "evaporation": evp_classification.result(),
-            "moisture": moisture_classification.result(),
             "rain": rain_classification.result(),
         }
 
-    def analysing_data_classifier(self, data: AnalysisResult) -> str:
-        """Метод для анализа полученных данных в виде строк(evaporation, moisture,rain_probability,rain_precipitation)"""
-        current_state = (
-            data["evaporation"],
-            data["moisture"],
-            data["rain"]["probability"],
-            data["rain"]["precipitation"],
-        )
+        if moisture_classification is not None:
+            result["moisture"] = moisture_classification.result()
 
-        RULES = {
-            (
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-            ): "нужен полив",
-            (
-                CLASSIFICATION[1],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-            ): "нужен полив",
-            (
-                CLASSIFICATION[2],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-            ): "нужен полив",
-            (
-                CLASSIFICATION[3],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-            ): "нужен полив",
-            (
-                CLASSIFICATION[3],
-                CLASSIFICATION[2],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-            ): "нужен полив",
-            (
-                CLASSIFICATION[3],
-                CLASSIFICATION[3],
-                CLASSIFICATION[0],
-                CLASSIFICATION[0],
-            ): "нужен полив",
-        }
-        return RULES.get(current_state, "0")
+        return result
+
+    def analysing_data_classifier(self, data: AnalysisResult) -> str:
+        """Метод для анализа полученных данных в виде строк(evaporation, moisture, rain_probability, rain_precipitation)"""
+
+        # Проверяем, есть ли moisture в данных
+        if "moisture" in data:
+            current_state = (
+                data["evaporation"],
+                data["moisture"],
+                data["rain"]["probability"],
+                data["rain"]["precipitation"],
+            )
+            RULES = {
+                (
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[1],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[2],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[3],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[3],
+                    CLASSIFICATION[2],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[3],
+                    CLASSIFICATION[3],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+            }
+            return RULES.get(current_state, "0")
+        else:
+            current_state = (
+                data["evaporation"],
+                data["rain"]["probability"],
+                data["rain"]["precipitation"],
+            )
+            RULES_WITHOUT_MOISTURE = {
+                (
+                    CLASSIFICATION[1],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[2],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+                (
+                    CLASSIFICATION[3],
+                    CLASSIFICATION[0],
+                    CLASSIFICATION[0],
+                ): "нужен полив",
+            }
+            return RULES_WITHOUT_MOISTURE.get(current_state, "0")

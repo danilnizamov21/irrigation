@@ -28,23 +28,22 @@ async def agregate_data(days):
 
 async def agregate_by_day(agregate):
     async with asyncio.TaskGroup() as tg:
-        day1 = tg.create_task(_determine_irrigation_decision(agregate[0], 60))
-        day2 = tg.create_task(_determine_irrigation_decision(agregate[1], 60))
-        day3 = tg.create_task(_determine_irrigation_decision(agregate[2], 60))
-        day4 = tg.create_task(_determine_irrigation_decision(agregate[3], 60))
-        day5 = tg.create_task(_determine_irrigation_decision(agregate[4], 60))
-        day6 = tg.create_task(_determine_irrigation_decision(agregate[5], 60))
-        day7 = tg.create_task(_determine_irrigation_decision(agregate[6], 60))
-        # TODO ДОДЕЛАТЬ ПЕРЕДАЧУ И АНАЛИЗ ДАННЫХ НА КАЖДЫЙ ДЕНЬ
+        day1 = tg.create_task(_determine_irrigation_decision(agregate[0], None))
+        day2 = tg.create_task(_determine_irrigation_decision(agregate[1], None))
+        day3 = tg.create_task(_determine_irrigation_decision(agregate[2], None))
+        day4 = tg.create_task(_determine_irrigation_decision(agregate[3], None))
+        day5 = tg.create_task(_determine_irrigation_decision(agregate[4], None))
+        day6 = tg.create_task(_determine_irrigation_decision(agregate[5], None))
+        day7 = tg.create_task(_determine_irrigation_decision(agregate[6], None))
 
     return {
-        "1": day1.result(),
-        "2": day2.result(),
-        "3": day3.result(),
-        "4": day4.result(),
-        "5": day5.result(),
-        "6": day6.result(),
-        "7": day7.result(),
+        f"{agregate[0].date.date()}": day1.result(),
+        f"{agregate[1].date.date()}": day2.result(),
+        f"{agregate[2].date.date()}": day3.result(),
+        f"{agregate[3].date.date()}": day4.result(),
+        f"{agregate[4].date.date()}": day5.result(),
+        f"{agregate[5].date.date()}": day6.result(),
+        f"{agregate[6].date.date()}": day7.result(),
     }
 
 
