@@ -7,6 +7,7 @@ from authx import AuthX, AuthXConfig
 from fastapi import HTTPException
 from redis import RedisError
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.user import User
@@ -143,4 +144,13 @@ class AuthService:
             logger.exception(
                 f"Ошибка Redis при попытке удаления токена refresh_token={token}"
             )
+            raise
+
+    async def user_me(self, user_id: int):
+        try:
+            select_ = select(User).where(User.id == user_id)
+            result = await self.session.execute(select_)
+            return result.scalar_one_or_none()
+        except SQLAlchemyError as e:
+            logger.critical(f"Ошибка при получении данных юзера {user_id}. Error: {e}")
             raise

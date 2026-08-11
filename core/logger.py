@@ -15,6 +15,7 @@ def configure_logging():
     error_handler.setFormatter(formatter)
 
     logging.basicConfig(
-        level=logging.INFO,
-        handlers=[console_handler, error_handler],
+        level=logging.INFO, handlers=[console_handler, error_handler], force=True
     )
+
+    logging.getLogger().setLevel(logging.INFO)

@@ -2,14 +2,14 @@ import logging
 from datetime import timedelta
 from typing import Annotated
 
-from authx import AuthX, AuthXConfig
+from authx import AuthX, AuthXConfig, TokenPayload
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db import get_session
 from core.redis_bd import connect_to_redis
-from schemas.user import UserLogin, UserRegister
+from schemas.user import UserLogin, UserRegister, UserResponse
 from services.auth.auth import AuthService
 
 router = APIRouter()
@@ -88,3 +88,11 @@ async def logout(service: AuthServiceDep, response: Response, request: Request):
     except KeyError as e:
         logger.critical(f"Ошибка при попытке выхода: {e}. Cookie={cookie}")
         raise HTTPException(status_code=404, detail="Непредвиденная ошибка при выходе ")
+
+
+@router.get("/me", response_model=UserResponse)
+async def me(
+    service: AuthServiceDep, token: TokenPayload = Depends(auth.access_token_required)
+):
+
+    return await service.user_me(int(token.sub))
