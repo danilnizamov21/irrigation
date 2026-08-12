@@ -3,8 +3,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from core.db import Base, url
+from core.db import Base, url1
 from models.esp import Esp  # noqa
+from models.irrigation import SoilMeasurements  # noqa
 from models.user import User  # noqa
 from models.user_esp import user_esp_association  # noqa
 
@@ -17,7 +18,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", url + "?async_fallback=True")
+config.set_main_option("sqlalchemy.url", url1 + "?async_fallback=True")
 
 # add your model's MetaData object here
 # for 'autogenerate' support

@@ -30,7 +30,9 @@ async def _determine_irrigation_decision(day, soil_moisture: int | None) -> str:
     return status
 
 
-async def get_irrigation_decision_for_today(lat: float, lon: float, soil_moisture: int):
+async def get_irrigation_decision_for_today(
+    lat: float, lon: float, soil_moisture: int
+) -> str:
     """Метод для принятия решения о поливе на текущий день"""
     try:
         day_weather = WeatherFetcher()
@@ -41,7 +43,7 @@ async def get_irrigation_decision_for_today(lat: float, lon: float, soil_moistur
         decision = await _determine_irrigation_decision(
             current_day_weather, soil_moisture
         )
-        print(decision)
+
         return decision
 
     except Exception as e:

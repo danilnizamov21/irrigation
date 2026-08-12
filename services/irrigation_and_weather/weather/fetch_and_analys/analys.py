@@ -120,7 +120,7 @@ class Analys:
                     CLASSIFICATION[0],
                 ): "нужен полив",
             }
-            return RULES.get(current_state, "0")
+            return RULES.get(current_state, "не нужен полив")
         else:
             current_state = (
                 data["evaporation"],
@@ -144,4 +144,4 @@ class Analys:
                     CLASSIFICATION[0],
                 ): "нужен полив",
             }
-            return RULES_WITHOUT_MOISTURE.get(current_state, "0")
+            return RULES_WITHOUT_MOISTURE.get(current_state, "не нужен полив")

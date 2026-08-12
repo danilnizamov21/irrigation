@@ -7,6 +7,7 @@ from services.check_api_key import get_device_by_key
 from services.irrigation_and_weather.irrigation_decision_for_today import (
     get_irrigation_decision_for_today,
 )
+from services.irrigation_and_weather.recording_result import recording_irrigation_resul
 
 router = APIRouter()
 
@@ -18,6 +19,7 @@ async def telemetry(payload: SoilData, db: AsyncSession = Depends(get_session)):
     decision = await get_irrigation_decision_for_today(
         lat=device.lat, lon=device.lon, soil_moisture=payload.moisture
     )
+    await recording_irrigation_resul(device.id, decision, db)
     return decision
 
 
@@ -25,4 +27,9 @@ async def telemetry(payload: SoilData, db: AsyncSession = Depends(get_session)):
 async def start(esp_: int, duration: int):
     # TODO ручка тестовая, требует реализации уже в будущем. Через HTTP запрос будет поступать на есп32 и включать полив на определенный промежуток времени.Своего рода ручное управление
     # TODO так же стоит реализовать ручку полной остановки автополива.
+    pass
+
+
+@router.post("/stop")
+async def stop(esp: int):
     pass
