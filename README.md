@@ -63,4 +63,37 @@ ESP32 взаимодействует с backend через **HTTP API** и пе�
 *   **ESP32** — аппаратная часть системы.
 *   **HTTP / JSON** — протокол взаимодействия ESP32 с backend.
 
+## Установка и запуск
 
+### 1. Создание виртуального окружения
+```
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux / macOS
+source venv/bin/activate
+```
+
+### 2. Установка зависимостей
+```
+pip install -r requirements.txt
+```
+
+### 3. Переменные окружения
+создайте файл .env и заполните поля
+```
+REDIS_PWD = ""
+REDIS_HOST = ""
+REDIS_PORT = ""
+POSTGRES_PWD = ""
+POSTGRES_NAME = ""
+POSTGRES_HOST = ""
+```
+
+### 5. Запуск 
+```
+uvicorn main:app --reload
+```
+Документация будет доступна по адресу http://localhost:8000/docs
