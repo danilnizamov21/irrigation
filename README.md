@@ -92,7 +92,7 @@ POSTGRES_NAME = ""
 POSTGRES_HOST = ""
 ```
 
-### 5. Запуск 
+### 4. Запуск 
 ```
 uvicorn main:app --reload
 ```
