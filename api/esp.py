@@ -1,6 +1,8 @@
+from authx import TokenPayload
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.auth import auth
 from core.db import get_session
 from schemas.esp import SoilData
 from services.check_api_key import get_device_by_key
@@ -32,4 +34,12 @@ async def start(esp_: int, duration: int):
 
 @router.post("/stop")
 async def stop(esp: int):
+    pass
+
+
+@router.get("/telemetry")
+async def get_telemetry(
+    esp_id, token: TokenPayload = Depends(auth.access_token_required)
+):
+    # TODO ручка должна принимать id делать запрос к модулю и получать данные от него.
     pass

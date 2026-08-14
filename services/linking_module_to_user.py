@@ -4,6 +4,7 @@ from sqlalchemy import delete, exc, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.esp import Esp
+from models.irrigation import SoilMeasurements
 from models.user_esp import user_esp_association
 from schemas.esp import EspUpdate
 from services.auth.hash import hash_token
@@ -72,6 +73,7 @@ class LinkinModule:
             raise
 
     async def delete_module(self, esp_id: int, user_id: int):
+        """Удаления модуля из списка модулей юзера. Принимает esp_id, user_id"""
         try:
             delete_device = delete(user_esp_association).where(
                 user_esp_association.c.esp_id == esp_id,
@@ -85,4 +87,14 @@ class LinkinModule:
             logger.critical(
                 f"Ошибка при удалении модуля пользователем: {user_id}, модуля {esp_id}. С ошибкой {e}"
             )
+            raise
+
+    async def get_irrigation_story(self, esp_id):
+        try:
+            get = select(SoilMeasurements).where(SoilMeasurements.esp_id == esp_id)
+            result = await self.session.execute(get)
+            irr_story = result.scalars().first()
+            return irr_story
+        except exc.SQLAlchemyError as e:
+            logger.warning(f"Ошибка при получении данных о модуле {e}")
             raise

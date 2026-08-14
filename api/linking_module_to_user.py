@@ -70,4 +70,15 @@ async def delete_module(
     token: TokenPayload = Depends(auth.access_token_required),
     service: LinkinModule = Depends(get_linking_service),
 ):
+    """Удаление модуля из списка модулей юзера"""
     return await service.delete_module(module_id, int(token.sub))
+
+
+@router.get("/story/{module_id}")
+async def get_irrigation_story(
+    module_id: int,
+    token: TokenPayload = Depends(auth.access_token_required),
+    service: LinkinModule = Depends(get_linking_service),
+):
+    """Получение истории полива конкретного модуля"""
+    return await service.get_irrigation_story(module_id)
