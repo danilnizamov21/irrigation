@@ -1,14 +1,17 @@
 # Automatic Irrigation System
 
-**Система автоматического полива**, предназначенная для удалённого управления и контроля состояния огорода.
+<div align="center">
 
-## Технолгии
-
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688?logo=fastapi)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?logo=postgresql&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-8.0-DC382D?logo=redis&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-2.13-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
-![Pytest](https://img.shields.io/badge/Pytest-9.1-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![JWT](https://img.shields.io/badge/Auth-JWT-black?logo=jsonwebtokens)
+
+</div>
+
+**Система автоматического полива**, предназначенная для удалённого управления и контроля состояния огорода.
+
 
 ## Обзор архитектуры
 
