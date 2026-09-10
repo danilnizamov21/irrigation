@@ -8,8 +8,8 @@ from models.user_esp import user_esp_association
 class User(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    login: Mapped[str] = mapped_column(String)
-    email: Mapped[str] = mapped_column(String, nullable=False)
+    login: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     hash_password: Mapped[str] = mapped_column(String, nullable=False)
     role: Mapped[str] = mapped_column(
         String, default="user"

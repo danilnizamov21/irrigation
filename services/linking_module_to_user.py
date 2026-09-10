@@ -17,6 +17,20 @@ class LinkinModule:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def membership_check(self, key: int, user_id: int):
+        """Проверка принадлежности модуля пользователю"""
+        try:
+            check = select(user_esp_association).where(
+                user_esp_association.c.esp_id == hash_token(key),
+                user_esp_association.c.user_id == user_id,
+            )
+            result = await self.session.execute(check)
+            association = result.scalars().first()
+            return bool(association)
+        except exc.SQLAlchemyError as e:
+            logger.error(f"Ошибка при проверке принадлежности модуля: {e}")
+            raise
+
     async def linking_module_to_user(self, key: str, user_id: int) -> bool:
         """Привязка модуля к пользователю"""
         try:
@@ -45,9 +59,18 @@ class LinkinModule:
             logger.error(f"Ошибка при получении модулей: {e}")
             raise
 
-    async def get_module(self, key: int) -> Esp:
+    async def get_module(self, key: int, user_id: int) -> Esp:
         """Получение одного модуля по ID. получение полной информации о модуле"""
+
         try:
+            association = await self.membership_check(key, user_id)
+            if not association:
+                logger.warning(
+                    f"Попытка получить модуль {key} пользователем {user_id}, который не является владельцем"
+                )
+                raise PermissionError(
+                    "Вы не являетесь владельцем этого модуля и не можете его просматривать."
+                )
             get = select(Esp).where(Esp.id == hash_token(key))
             result = await self.session.execute(get)
             module = result.scalars().first()
@@ -56,9 +79,18 @@ class LinkinModule:
             logger.warning(f"Ошибка при получении данных о модуле {e}")
             raise
 
-    async def update_module(self, key: int, payload: EspUpdate):
+    async def update_module(self, key: int, payload: EspUpdate, user_id: int):
         """Обновление модуля по ID."""
         try:
+            association = await self.membership_check(key, user_id)
+            if not association:
+                logger.warning(
+                    f"Попытка обновить модуль {key} пользователем {user_id}, который не является владельцем"
+                )
+                raise PermissionError(
+                    "Вы не являетесь владельцем этого модуля и не можете его обновлять."
+                )
+
             update_device = (
                 update(Esp)
                 .where(Esp.hashed_api_key == hash_token(key))
@@ -89,8 +121,16 @@ class LinkinModule:
             )
             raise
 
-    async def get_irrigation_story(self, esp_id):
+    async def get_irrigation_story(self, esp_id, user_id):
         try:
+            association = await self.membership_check(esp_id, user_id)
+            if not association:
+                logger.warning(
+                    f"Попытка получить историю полива модуля {esp_id} пользователем {user_id}, который не является владельцем"
+                )
+                raise PermissionError(
+                    "Вы не являетесь владельцем этого модуля и не можете просматривать его историю полива."
+                )
             get = select(SoilMeasurements).where(SoilMeasurements.esp_id == esp_id)
             result = await self.session.execute(get)
             irr_story = result.scalars().first()

@@ -14,15 +14,14 @@ from models.user import User
 from schemas.user import UserLogin, UserRegister
 from services.auth.hash import hash_pass, hash_token, verify_password
 
-config = AuthXConfig()
-config = AuthXConfig(
+auth_config = AuthXConfig(
     JWT_SECRET_KEY="your-secret-keyq0w9odkq9e02di2093owdke9033iedo902de209",
     JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=15),  # Short-lived
     JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30),  # Long-lived
 )
 
 
-auth = AuthX(config=config)
+auth = AuthX(config=auth_config)
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,7 @@
 import logging
-from datetime import timedelta
 from typing import Annotated
 
-from authx import AuthX, AuthXConfig, TokenPayload
+from authx import AuthX, TokenPayload
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,17 +10,12 @@ from core.db import get_session
 from core.redis_bd import connect_to_redis
 from schemas.user import UserLogin, UserRegister, UserResponse
 from services.auth.auth import AuthService
+from services.auth.auth import config as auth_config
 
 router = APIRouter()
-config = AuthXConfig()
-config = AuthXConfig(
-    JWT_SECRET_KEY="your-secret-keyq0w9odkq9e02di2093owdke9033iedo902de209",
-    JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=15),  # Short-lived
-    JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30),  # Long-lived
-)
 
 
-auth = AuthX(config=config)
+auth = AuthX(config=auth_config)
 
 logger = logging.getLogger(__name__)
 

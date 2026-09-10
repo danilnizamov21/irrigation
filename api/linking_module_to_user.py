@@ -61,7 +61,7 @@ async def update_module(
 ):
     """Обновление данных модуля"""
 
-    return await service.update_module(module_key, payload)
+    return await service.update_module(module_key, payload, int(token.sub))
 
 
 @router.delete("/{module_id}")
@@ -81,4 +81,4 @@ async def get_irrigation_story(
     service: LinkinModule = Depends(get_linking_service),
 ):
     """Получение истории полива конкретного модуля"""
-    return await service.get_irrigation_story(module_id)
+    return await service.get_irrigation_story(module_id, int(token.sub))
