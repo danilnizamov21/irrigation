@@ -41,27 +41,27 @@ async def get_all_model(
     return await service.get_user_modules(user_id=user_id)
 
 
-@router.get("/module/{module_key}", response_model=EspResponse)
+@router.get("/module/{module_id}", response_model=EspResponse)
 async def get_one_module(
-    module_key: int,
+    module_id: int,
     token: TokenPayload = Depends(auth.access_token_required),
     service: LinkinModule = Depends(get_linking_service),
 ):
     """Получние информации по одному модулю"""
 
-    return await service.get_module(module_key)
+    return await service.get_module(module_id, int(token.sub))
 
 
-@router.patch("/module/{module_key}")
+@router.patch("/module/{module_id}")
 async def update_module(
-    module_key: int,
+    module_id: int,
     payload: EspUpdate,
     token: TokenPayload = Depends(auth.access_token_required),
     service: LinkinModule = Depends(get_linking_service),
 ):
     """Обновление данных модуля"""
 
-    return await service.update_module(module_key, payload, int(token.sub))
+    return await service.update_module(module_id, payload, int(token.sub))
 
 
 @router.delete("/{module_id}")
