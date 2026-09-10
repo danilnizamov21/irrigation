@@ -8,7 +8,7 @@ from core.db import Base
 
 class SoilMeasurements(Base):
     __tablename__ = "soil_measurements"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
     esp_id: Mapped[int] = mapped_column(ForeignKey("esp.id"))
     irrigation: Mapped[str] = mapped_column()
     timestamp: Mapped[datetime.datetime] = mapped_column(
