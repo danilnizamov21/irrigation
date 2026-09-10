@@ -4,6 +4,7 @@ from typing import Any
 
 import httpx
 
+from core.http_client import get_http_client
 from core.logger import configure_logging
 from schemas.daily_agregate import DailyAgregate
 
@@ -23,8 +24,7 @@ class WeatherDataFetcher:
         try:
             url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lon}&hourly=temperature_2m,shortwave_radiation,precipitation_probability,precipitation,relative_humidity_2m&timezone=Europe%2FMoscow&forecast_days={self.forecast_days}"
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url)
+            response = await get_http_client().get(url)
 
             response.raise_for_status()
             return response.json()

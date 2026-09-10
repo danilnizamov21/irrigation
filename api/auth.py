@@ -7,10 +7,9 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db import get_session
-from core.redis_bd import connect_to_redis
+from core.redis_bd import get_redis
 from schemas.user import UserLogin, UserRegister, UserResponse
-from services.auth.auth import AuthService
-from services.auth.auth import config as auth_config
+from services.auth.auth import AuthService, auth_config
 
 router = APIRouter()
 
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 async def get_auth_service(
     session: AsyncSession = Depends(get_session),
-    redis_con: Redis = Depends(connect_to_redis),
+    redis_con: Redis = Depends(get_redis),
 ) -> AuthService:
     return AuthService(session=session, redis_con=redis_con)
 

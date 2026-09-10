@@ -1,5 +1,6 @@
 import logging
 import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,8 +9,20 @@ from api.admin import router as admin
 from api.auth import router as auth
 from api.esp import router as esp
 from api.linking_module_to_user import router as linking
+from core.http_client import close_http_client, init_http_client
+from core.redis_bd import close_redis, init_redis
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.redis = await init_redis()
+    app.state.http_client = await init_http_client()
+    yield
+    await close_http_client()
+    await close_redis()
+
+
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

@@ -2,14 +2,22 @@ from unittest.mock import AsyncMock
 
 import httpx
 import pytest
+import pytest_asyncio
 from payload_json_data import payload_json_for_test_fetch
 
+from core.http_client import close_http_client, init_http_client
 from services.irrigation_and_weather.weather.fetch_and_analys.data_fetcher import (
     WeatherDataFetcher,
 )
 
 
 class TestWeatherDataFetcher:
+    @pytest_asyncio.fixture(autouse=True)
+    async def shared_http_client(self):
+        await init_http_client()
+        yield
+        await close_http_client()
+
     @pytest.fixture
     def fetch(self):
         return WeatherDataFetcher(58, 38, 1)

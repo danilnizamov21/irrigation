@@ -5,7 +5,8 @@ from typing import Any
 import jwt
 from authx import AuthX, AuthXConfig
 from fastapi import HTTPException
-from redis import RedisError
+from redis.asyncio import Redis
+from redis.exceptions import RedisError
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class AuthService:
-    def __init__(self, session: AsyncSession, redis_con):
+    def __init__(self, session: AsyncSession, redis_con: Redis):
         self.session = session
         self.redis_con = redis_con
 
@@ -96,8 +97,7 @@ class AuthService:
         "Хэшируем токен и передаем в бд редис"
         try:
             hashed_token = hash_token(token)
-            r = await self.redis_con
-            await r.set(f"hashed_token:{hashed_token}", user_id, ex=2419000)
+            await self.redis_con.set(f"hashed_token:{hashed_token}", user_id, ex=2419000)
         except RedisError:
             logger.critical(
                 f"Ошибка при попытке сохранении токена в Редис user_id={user_id}"
