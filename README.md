@@ -82,18 +82,24 @@ pip install -r requirements.txt
 ```
 
 ### 3. Переменные окружения
-создайте файл .env и заполните поля
+Скопируйте `env.example` в `.env` и заполните поля:
 ```
-REDIS_PWD = ""
-REDIS_HOST = ""
-REDIS_PORT = ""
-POSTGRES_PWD = ""
-POSTGRES_NAME = ""
-POSTGRES_HOST = ""
+JWT_SECRET_KEY=
+POSTGRES_USER=postgres
+POSTGRES_PWD=
+POSTGRES_NAME=
+POSTGRES_HOST=
+POSTGRES_PORT=5432
+REDIS_PWD=
+REDIS_HOST=
+REDIS_PORT=
 ```
 
-### 4. Запуск 
+Локально при Postgres из docker-compose хост обычно `localhost`, порт `5433`.
+
+### 4. Миграции и запуск
 ```
+alembic upgrade head
 uvicorn main:app --reload
 ```
 Документация будет доступна по адресу http://localhost:8000/docs

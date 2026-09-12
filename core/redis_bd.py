@@ -6,7 +6,7 @@ from dotenv import find_dotenv, load_dotenv
 
 logger = logging.getLogger(__name__)
 
-file_loaded = load_dotenv(find_dotenv(), verbose=True, override=True)
+file_loaded = load_dotenv(find_dotenv(), verbose=True, override=False)
 
 pwd = os.getenv("REDIS_PWD")
 host = os.getenv("REDIS_HOST", "redis")

@@ -11,14 +11,15 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.config import jwt_secret_key
 from models.user import User
 from schemas.user import UserLogin, UserRegister
 from services.auth.hash import hash_pass, hash_token, verify_password
 
 auth_config = AuthXConfig(
-    JWT_SECRET_KEY="your-secret-keyq0w9odkq9e02di2093owdke9033iedo902de209",
-    JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=15),  # Short-lived
-    JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30),  # Long-lived
+    JWT_SECRET_KEY=jwt_secret_key(),
+    JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=15),
+    JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30),
 )
 
 
@@ -129,8 +130,9 @@ class AuthService:
 
     def decode_jwt(self, token: str):
         """Декодирование JWT для получения информации по нужным полям"""
-        secret = "your-secret-keyq0w9odkq9e02di2093owdke9033iedo902de209"
-        decoded_jwt = jwt.decode(token, secret, algorithms=["HS256"])
+        decoded_jwt = jwt.decode(
+            token, auth_config.JWT_SECRET_KEY, algorithms=["HS256"]
+        )
         return decoded_jwt
 
     async def delete_refresh_token(self, token: str):

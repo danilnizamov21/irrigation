@@ -1,14 +1,9 @@
-import os
-
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-password = os.getenv("POSTGRES_PWD")
-name = os.getenv("POSTGRES_NAME")
-host = os.getenv("POSTGRES_HOST")
-url = "postgresql+asyncpg://postgres:1234@localhost/irrigation"
-# url1 = "postgresql+asyncpg://postgres:1234@localhost/irrigation"
-engine = create_async_engine(url)
+from core.config import async_database_url
+
+engine = create_async_engine(async_database_url())
 SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 
@@ -17,6 +12,5 @@ async def get_session():
         yield s
 
 
-# TODO  add refresh tokens
 class Base(DeclarativeBase):
     pass

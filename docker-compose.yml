@@ -6,10 +6,12 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - JWT_SECRET_KEY=change-me-in-production
+      - POSTGRES_USER=postgres
       - POSTGRES_PWD=mypassword
       - POSTGRES_NAME=mydb
       - POSTGRES_HOST=db
-      
+      - POSTGRES_PORT=5432
       - REDIS_PWD=1234
       - REDIS_HOST=redis
       - REDIS_PORT=6379

@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from authx import AuthX, TokenPayload
+from authx import TokenPayload
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,12 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.db import get_session
 from core.redis_bd import get_redis
 from schemas.user import UserLogin, UserRegister, UserResponse
-from services.auth.auth import AuthService, auth_config
+from services.auth.auth import AuthService, auth
 
 router = APIRouter()
-
-
-auth = AuthX(config=auth_config)
 
 logger = logging.getLogger(__name__)
 
